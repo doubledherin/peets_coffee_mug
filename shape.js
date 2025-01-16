@@ -4,21 +4,15 @@
 // Diamond (dotted)
 // Hourglass (solid)
 
-// TO DO:
-// Make grid "know" where to place shapes smartly
-// Simplify Shape draw function
-// Padding between elements?
-// Skinnier diamonds?
-
 class Shape {
-  constructor(x, y, m) {
+  constructor(x, y, cellSize) {
     const babyBlue = "#a6c9b8"
-    const brickRed = "#c03f18"
-    const ochre = "#cc7722"
-    this.colors = [babyBlue, brickRed, ochre]
+    const brickRed = "#c04657"
+    const mustard = "#ffbf00"
+    this.colors = [babyBlue, brickRed, mustard]
     this.x = x
     this.y = y
-    this.m = m
+    this.cellSize = cellSize
     this.numRows = 8
     this.dotSize = 4
     this.padding = 2
@@ -108,8 +102,8 @@ class Shape {
   diamond(x, y, diamondColor) {
     stroke(255, 240, 219)
     strokeWeight(3)
-    this.triangleOfDots(x, y - this.m, "up", diamondColor)
-    this.triangleOfDots(x, y + this.m, "down", diamondColor)
+    this.triangleOfDots(x, y - this.cellSize, "up", diamondColor)
+    this.triangleOfDots(x, y + this.cellSize, "down", diamondColor)
     noStroke()
   }
 
@@ -120,30 +114,30 @@ class Shape {
     triangle(
       this.x,
       this.y,
-      this.x - this.m,
-      this.y + this.m,
-      this.x + this.m,
-      this.y + this.m
+      this.x - this.cellSize,
+      this.y + this.cellSize,
+      this.x + this.cellSize,
+      this.y + this.cellSize
     )
     triangle(
       this.x,
       this.y,
-      this.x - this.m,
-      this.y - this.m,
-      this.x + this.m,
-      this.y - this.m
+      this.x - this.cellSize,
+      this.y - this.cellSize,
+      this.x + this.cellSize,
+      this.y - this.cellSize
     )
     noStroke()
   }
 
   hourglassWithDiamondToTheRight(hourglassColor) {
     const diamondColor = random(this.colors.filter((c) => c !== hourglassColor))
-    this.diamond(this.x + this.m, this.y, diamondColor)
+    this.diamond(this.x + this.cellSize, this.y, diamondColor)
   }
 
   hourglassWithDiamondToTheLeft(hourglassColor) {
     const diamondColor = random(this.colors.filter((c) => c !== hourglassColor))
-    this.diamond(this.x - this.m, this.y, diamondColor)
+    this.diamond(this.x - this.cellSize, this.y, diamondColor)
   }
 
   hourglassWithTwoTrianglesToTheLeft(hourglassColor) {
@@ -157,12 +151,12 @@ class Shape {
     stroke(255, 240, 219)
     strokeWeight(3)
     triangle(
-      this.x - this.m * 2,
+      this.x - this.cellSize * 2,
       this.y,
-      this.x - this.m,
-      this.y - this.m,
-      this.x - this.m,
-      this.y + this.m
+      this.x - this.cellSize,
+      this.y - this.cellSize,
+      this.x - this.cellSize,
+      this.y + this.cellSize
     )
   }
 
@@ -177,12 +171,12 @@ class Shape {
     stroke(255, 240, 219)
     strokeWeight(3)
     triangle(
-      this.x + this.m * 2,
+      this.x + this.cellSize * 2,
       this.y,
-      this.x + this.m,
-      this.y - this.m,
-      this.x + this.m,
-      this.y + this.m
+      this.x + this.cellSize,
+      this.y - this.cellSize,
+      this.x + this.cellSize,
+      this.y + this.cellSize
     )
   }
 
@@ -193,7 +187,7 @@ class Shape {
     const c2 = random(
       this.colors.filter((c) => c !== c1 && c !== hourglassColor)
     )
-    this.diamond(this.x + this.m, this.y, c2)
+    this.diamond(this.x + this.cellSize, this.y, c2)
   }
 
   hourglassWithTwoTrianglesToTheLeftAndDiamondOnTheRight(hourglassColor) {
@@ -213,12 +207,12 @@ class Shape {
     // triangle should always be solid when next to a diamond, and a different color from diamond
     fill(random(this.colors.filter((c) => c !== diamondColor)))
     triangle(
-      this.x + this.m,
+      this.x + this.cellSize,
       this.y,
       this.x,
-      this.y - this.m,
-      this.x + this.m * 2,
-      this.y - this.m
+      this.y - this.cellSize,
+      this.x + this.cellSize * 2,
+      this.y - this.cellSize
     )
   }
 
@@ -277,10 +271,10 @@ class Shape {
           triangle(
             this.x,
             this.y,
-            this.x + this.m,
-            this.y - this.m,
-            this.x + this.m,
-            this.y + this.m
+            this.x + this.cellSize,
+            this.y - this.cellSize,
+            this.x + this.cellSize,
+            this.y + this.cellSize
           )
         }
         break
@@ -292,10 +286,10 @@ class Shape {
           triangle(
             this.x,
             this.y,
-            this.x - this.m,
-            this.y - this.m,
-            this.x - this.m,
-            this.y + this.m
+            this.x - this.cellSize,
+            this.y - this.cellSize,
+            this.x - this.cellSize,
+            this.y + this.cellSize
           )
         }
         break
@@ -307,10 +301,10 @@ class Shape {
           triangle(
             this.x,
             this.y,
-            this.x - this.m,
-            this.y + this.m,
-            this.x + this.m,
-            this.y + this.m
+            this.x - this.cellSize,
+            this.y + this.cellSize,
+            this.x + this.cellSize,
+            this.y + this.cellSize
           )
         }
         break
@@ -323,10 +317,10 @@ class Shape {
           triangle(
             this.x,
             this.y,
-            this.x - this.m,
-            this.y - this.m,
-            this.x + this.m,
-            this.y - this.m
+            this.x - this.cellSize,
+            this.y - this.cellSize,
+            this.x + this.cellSize,
+            this.y - this.cellSize
           )
         }
         break

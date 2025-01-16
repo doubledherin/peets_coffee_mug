@@ -1,19 +1,14 @@
 let grid
-let w
-let h
-let m = 50 // modulus
-let shape
+let cellSize = 50
 
 function setup() {
-  w = windowWidth - (windowWidth % m)
-  h = windowHeight - (windowHeight % m)
-  createCanvas(min(w, h), min(w, h))
-  noStroke() // comment this out and it looks cool too
-  grid = new Grid(width, height, m)
-  background(255, 240, 219)
-  grid.showShapes()
+  createCanvas(windowWidth, windowHeight)
+  background(255, 240, 219) // beige
   noLoop()
-  grid.showDots()
 }
 
-function draw() {}
+function draw() {
+  grid = new Grid(width, height, cellSize)
+  // grid.showDots()
+  grid.showShapes()
+}

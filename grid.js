@@ -1,142 +1,95 @@
 class Grid {
-  constructor(w, h, m) {
-    this.m = m
-    this.numRows = w / m
-    this.numCols = h / m
+  constructor(w, h, cellSize) {
+    this.cellSize = cellSize
+    this.numRows = h / cellSize
+    this.numCols = w / cellSize
     this.dots = []
     this.shapes = []
-    this.generateDots()
+
+    this.generateDotsAndNexuses()
     this.generateShapes()
   }
 
-  generateDots() {
-    for (let rowNumber = 1; rowNumber < this.numCols; rowNumber++) {
-      for (let columnNumber = 1; columnNumber < this.numRows; columnNumber++) {
-        const x = columnNumber * this.m
-        const y = rowNumber * this.m
+  // Populates this.dots with objects representing dots, soome of which can be "nexuses"
+  generateDotsAndNexuses() {
+    for (let rowNumber = 1; rowNumber < this.numRows; rowNumber++) {
+      for (let columnNumber = 1; columnNumber < this.numCols; columnNumber++) {
+        const x = columnNumber * this.cellSize
+        const y = rowNumber * this.cellSize
 
-        const canBe = this.canBeNexus(x, y)
-        if (canBe) {
-          const isNexus = random() < 0.55
-          this.dots.push({ x, y, isNexus: isNexus })
-        } else {
-          this.dots.push({ x, y, isNexus: false })
-        }
+        const isNexus = this.canBeNexus(x, y) && random() < 0.6
+        this.dots.push({ x, y, isNexus })
       }
     }
   }
 
   canBeNexus(x, y) {
-    // check above
-    const dotsAbove = this.dots.filter(
-      (d) => d.x === x && (d.y === y - this.m || d.y === y - this.m * 2)
-    )
-    // check left
-    const dotsLeft = this.dots.filter(
-      (d) =>
-        (d.x === x - this.m ||
-          d.x === x - this.m * 2 ||
-          d.x == x - this.m * 3) &&
-        d.y === y
-    )
-    // check above and to the right
-    const dotsTopRight = this.dots.filter(
-      (d) =>
-        (d.x === x + this.m && d.y === y - this.m) ||
-        (d.x === x + this.m * 2 && d.y === y - this.m * 2)
-    )
+    const surroundingDots = [
+      ...this.getDotsAbove(x, y),
+      ...this.getDotsLeft(x, y),
+      ...this.getDotsTopRight(x, y),
+      ...this.getDotsTopLeft(x, y),
+      ...this.getDotsLsTopLeft(x, y),
+      ...this.getDotsLsTopRight(x, y),
+    ]
 
-    // check above and to the left
-    const dotsTopLeft = this.dots.filter(
-      (d) =>
-        (d.x === x - this.m && d.y === y - this.m) ||
-        (d.x === x - this.m * 2 && d.y === y - this.m * 2)
-    )
-
-    // check Ls
-    const dotsLsTopLeft = this.dots.filter(
-      (d) =>
-        (d.x === x - this.m && d.y === y - this.m * 2) ||
-        (d.x === x - this.m * 2 && d.y === y - this.m)
-    )
-
-    const dotsLsTopRight = this.dots.filter(
-      (d) =>
-        (d.x === x + this.m && d.y === y - this.m * 2) ||
-        (d.x === x + this.m * 2 && d.y === y - this.m)
-    )
-
-    // Top row check
-    if (dotsAbove.length === 0) {
-      return dotsLeft?.filter((d) => d.isNexus)?.length === 0
-    }
-
-    // Left edge check
-    if (dotsLeft.length === 0) {
-      return !this.dotsContainNexus(dotsAbove)
-    }
-    if (dotsTopLeft.length === 0) {
-      return (
-        !this.dotsContainNexus(dotsAbove) && !this.dotsContainNexus(dotsLeft)
-      )
-    }
-
-    // right edge check
-    if (dotsTopRight.length === 0) {
-      return (
-        !this.dotsContainNexus(dotsAbove) && !this.dotsContainNexus(dotsLeft)
-      )
-    }
-
-    if (
-      this.dotsContainNexus(dotsAbove) ||
-      this.dotsContainNexus(dotsLeft) ||
-      this.dotsContainNexus(dotsTopRight) ||
-      this.dotsContainNexus(dotsTopLeft) ||
-      this.dotsContainNexus(dotsLsTopLeft) ||
-      this.dotsContainNexus(dotsLsTopRight)
-    ) {
-      return false
-    }
-    return true
+    return surroundingDots.filter((d) => d.isNexus).length === 0
   }
 
-  dotsContainNexus(dots) {
-    return dots.some((d) => d.isNexus)
+  getDotsAbove(x, y) {
+    return this.dots.filter(
+      (d) =>
+        d.x === x &&
+        (d.y === y - this.cellSize || d.y === y - this.cellSize * 2)
+    )
+  }
+
+  getDotsLeft(x, y) {
+    return this.dots.filter(
+      (d) =>
+        (d.x === x - this.cellSize ||
+          d.x === x - this.cellSize * 2 ||
+          d.x === x - this.cellSize * 3) &&
+        d.y === y
+    )
+  }
+
+  getDotsTopRight(x, y) {
+    return this.dots.filter(
+      (d) =>
+        (d.x === x + this.cellSize && d.y === y - this.cellSize) ||
+        (d.x === x + this.cellSize * 2 && d.y === y - this.cellSize * 2)
+    )
+  }
+
+  getDotsTopLeft(x, y) {
+    return this.dots.filter(
+      (d) =>
+        (d.x === x - this.cellSize && d.y === y - this.cellSize) ||
+        (d.x === x - this.cellSize * 2 && d.y === y - this.cellSize * 2)
+    )
+  }
+
+  getDotsLsTopLeft(x, y) {
+    return this.dots.filter(
+      (d) =>
+        (d.x === x - this.cellSize && d.y === y - this.cellSize * 2) ||
+        (d.x === x - this.cellSize * 2 && d.y === y - this.cellSize)
+    )
+  }
+
+  getDotsLsTopRight(x, y) {
+    return this.dots.filter(
+      (d) =>
+        (d.x === x + this.cellSize && d.y === y - this.cellSize * 2) ||
+        (d.x === x + this.cellSize * 2 && d.y === y - this.cellSize)
+    )
   }
 
   generateShapes() {
     for (const dot of this.dots) {
       if (dot.isNexus) {
-        this.shapes.push(new Shape(dot.x, dot.y, this.m))
-      }
-    }
-  }
-
-  isLeftEdge(x, y) {
-    return x === m
-  }
-
-  isRightEdge(x, y) {
-    return x === m * this.numRows
-  }
-
-  isTopEdge(x, y) {
-    return y === m
-  }
-
-  isBottomEdge(x, y) {
-    return y === m * this.numCols
-  }
-
-  showDots() {
-    for (const dot of this.dots) {
-      if (dot.isNexus) {
-        fill(255, 0, 0)
-        circle(dot.x, dot.y, 5)
-      } else {
-        fill(0)
-        circle(dot.x, dot.y, 3)
+        this.shapes.push(new Shape(dot.x, dot.y, this.cellSize))
       }
     }
   }
@@ -144,6 +97,22 @@ class Grid {
   showShapes() {
     for (const shape of this.shapes) {
       shape.draw()
+    }
+  }
+
+  // Used for developmewnt purposes only
+  showDots() {
+    for (const dot of this.dots) {
+      if (dot.isNexus) {
+        // Make nexuses red and bigger
+        fill(255, 0, 0)
+        noStroke()
+        circle(dot.x, dot.y, 5)
+      } else {
+        // Make non-nexuses black and smaller
+        fill(0)
+        circle(dot.x, dot.y, 3)
+      }
     }
   }
 }
